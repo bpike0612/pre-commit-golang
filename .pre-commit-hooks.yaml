@@ -1,0 +1,6 @@
+- id: git-chglog
+  name: git-chglog
+  entry: pre-commit-golang git-chglog
+  files: '\.go$'
+  language: golang
+  description: CHANGELOG generator implemented in Go (Golang)
