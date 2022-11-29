@@ -9,22 +9,16 @@ import (
 )
 
 // rootCmd represents the base command when called without any subcommands.
-var rootCmd = &cobra.Command{ //nolint
-	Use:   "git-chglog --output CHANGELOG.md",
-	Short: "git-chglog generates changelog",
-	Long:  `git-chglog generates changelog`,
+var gitchglog = &cobra.Command{ //nolint
+	Use:   "git-chglog [options] <tag query>",
+	Short: "CHANGELOG generator implemented in Go (Golang). Anytime, anywhere, Write your CHANGELOG.",
+	Long:  ``,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {},
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		os.Exit(1)
-	}
-	run()
+	Run: func(cmd *cobra.Command, args []string) {
+		cmds := []string{"--output CHANGELOG.md"}
+		runTool("git-chglog", append(cmds, args...))
+	},
 }
 
 func init() {
@@ -33,24 +27,31 @@ func init() {
 	// will be global for your application.
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.studybuddy.yaml)")
-	var flag string
+
+	// var flag string
+
 	// rootCmd.PersistentFlags().StringVar(&flag, "output", "CHANGELOG.md", "")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().StringVarP(&flag,
-		"output",
-		"o",
-		"",
-		"output path and filename for the changelogs; if not specified, output to stdout")
+
+	//rootCmd.Flags().StringVarP(&flag,
+	//	"output",
+	//	"o",
+	//	"",
+	//	"output path and filename for the changelogs; if not specified, output to stdout")
+	rootCmd.AddCommand(gitchglog)
 }
 
-func run() {
-	out, err := exec.Command("git-chglog", "--output CHANGELOG.md").Output()
+func runTool(cmd string, args []string) {
+	c := exec.Command(cmd, args...)
+
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+
+	err := c.Run()
 	if err != nil {
-		fmt.Printf("%s\n", err)
+		fmt.Fprintf(os.Stderr, "error running %s %s: %s", cmd, args, err)
+		os.Exit(1)
 	}
-	fmt.Println("Command Successfully Executed")
-	output := string(out[:])
-	fmt.Println(output)
 }
