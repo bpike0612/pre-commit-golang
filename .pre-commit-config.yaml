@@ -11,7 +11,7 @@ repos:
     rev: v1.50.1
     hooks:
       - id: golangci-lint
-#  - repo: https://github.com/bpike0612/pre-commit-golang
-#    rev: v0.5.1
-#    hooks:
-#      - id: git-chglog
+  - repo: https://github.com/bpike0612/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      - id: git-chglog
