@@ -1,12 +1,14 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"os/exec"
 
 	"github.com/spf13/cobra"
 )
+
+var in, output, version string
 
 // rootCmd represents the base command when called without any subcommands.
 var gitchglog = &cobra.Command{ //nolint
@@ -16,8 +18,14 @@ var gitchglog = &cobra.Command{ //nolint
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		cmds := []string{"--output CHANGELOG.md"}
-		runTool("git-chglog", append(cmds, args...))
+		var cmds []string
+
+		if len(output) != 0 {
+			cmds = append(cmds, "--output")
+			cmds = append(cmds, "CHANGELOG.md")
+		}
+
+		runTool("git-chglog", cmds)
 	},
 }
 
@@ -26,32 +34,18 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.studybuddy.yaml)")
-
-	// var flag string
-
-	// rootCmd.PersistentFlags().StringVar(&flag, "output", "CHANGELOG.md", "")
-
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 
-	//rootCmd.Flags().StringVarP(&flag,
-	//	"output",
-	//	"o",
-	//	"",
-	//	"output path and filename for the changelogs; if not specified, output to stdout")
+	gitchglog.PersistentFlags().StringVarP(&output, "output", "o", "", "output path and filename for the changelogs; if not specified, output to stdout")
 	rootCmd.AddCommand(gitchglog)
 }
 
 func runTool(cmd string, args []string) {
 	c := exec.Command(cmd, args...)
-
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
-
-	err := c.Run()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error running %s %s: %s", cmd, args, err)
-		os.Exit(1)
+	if err := c.Run(); err != nil {
+		log.Fatalln(err)
 	}
 }
