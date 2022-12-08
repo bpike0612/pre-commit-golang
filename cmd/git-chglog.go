@@ -22,7 +22,7 @@ var gitchglog = &cobra.Command{ //nolint
 
 		if len(output) != 0 {
 			cmds = append(cmds, "--output")
-			cmds = append(cmds, "CHANGELOG.md")
+			cmds = append(cmds, "./CHANGELOG.md")
 		}
 
 		runTool("git-chglog", cmds)
